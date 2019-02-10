@@ -34,6 +34,21 @@ class Racer
     result.nil? ? nil : Racer.new(result)
   end
 
+  def self.paginate(params)
+    page = (params[:page] || 1).to_i
+    limit = (params[:per_page] || 30).to_i
+    skip = (page - 1) * limit
+    racers = []
+    coll = all({}, { number: 1 }, skip, limit)
+    coll.each do |racer|
+      racers << Racer.new(racer)
+    end
+    total = coll.count
+    WillPaginate::Collection.create(page, limit, total) do |pager|
+      pager.replace(racers)
+    end
+  end
+
   def save
     result = self.class.collection.insert_one(number: @number, \
                                               first_name: @first_name, \
