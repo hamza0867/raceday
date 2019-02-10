@@ -1,5 +1,7 @@
 # Class representing a racer
 class Racer
+  include ActiveModel::Model
+
   attr_accessor :id, :number, :first_name, :last_name, :gender, :group, :secs
 
   def initialize(params = {})
@@ -57,5 +59,17 @@ class Racer
 
   def destroy
     self.class.collection.delete_one(number: @number)
+  end
+
+  def persisted?
+    !@id.nil?
+  end
+
+  def created_at
+    nil
+  end
+
+  def updated_at
+    nil
   end
 end
