@@ -31,4 +31,31 @@ class Racer
     result = collection.find(_id: val).first
     result.nil? ? nil : Racer.new(result)
   end
+
+  def save
+    result = self.class.collection.insert_one(number: @number, \
+                                              first_name: @first_name, \
+                                              last_name: @last_name, \
+                                              gender: @gender, \
+                                              group: @group, \
+                                              secs: @secs)
+    @id = result.inserted_id.to_s
+  end
+
+  def update(params)
+    @number = params[:number].to_i
+    @first_name = params[:first_name]
+    @last_name = params[:last_name]
+    @gender = params[:gender]
+    @group = params[:group]
+    @secs = params[:secs].to_i
+    params = { number: @number, first_name: @first_name, last_name: @last_name,\
+               gender: @gender, group: @group, secs: @secs }
+    self.class.collection.update_one({ _id: BSON::ObjectId(@id) },\
+                                     '$set' => params)
+  end
+
+  def destroy
+    self.class.collection.delete_one(number: @number)
+  end
 end
